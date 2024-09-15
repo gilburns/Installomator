@@ -338,7 +338,7 @@ if [[ $(/usr/bin/arch) == "arm64" ]]; then
     fi
 fi
 VERSION="10.7beta"
-VERSIONDATE="2024-09-02"
+VERSIONDATE="2024-08-31"
 
 # MARK: Functions
 
@@ -2209,10 +2209,9 @@ awscli2)
 awsvpnclient)
     name="AWS VPN Client"
     type="pkg"
-    baseURL="https://d20adtppz83p9s.cloudfront.net/OSX"
-    appNewVersion=$(curl -s "https://docs.aws.amazon.com/vpn/latest/clientvpn-user/client-vpn-user-guide.rss" | grep -o 'AWS provided client ([0-9]*\.[0-9]*\.[0-9]*) for macOS' | head -1 | grep -o '[0-9]*\.[0-9]*\.[0-9]*')
-    downloadURL="${baseURL}/${appNewVersion}/AWS_VPN_Client.pkg"
+    downloadURL="https://d20adtppz83p9s.cloudfront.net/OSX/latest/AWS_VPN_Client.pkg"
     expectedTeamID="94KV3E626L"
+    #appNewVersion=$(curl -is "https://beta2.communitypatch.com/jamf/v1/ba1efae22ae74a9eb4e915c31fef5dd2/patch/AWSVPNClient" | grep currentVersion | tr ',' '\n' | grep currentVersion | cut -d '"' -f 4)
     ;;
 axurerp10)
     name="Axure RP 10"
@@ -3139,14 +3138,6 @@ discord)
     appNewVersion="$(curl -fsL -o /dev/null -w %{url_effective} "${downloadURL}" | awk -F'/' '{print $(NF-1)}')"
     expectedTeamID="53Q6R32WPB"
     ;;
-diskdrill)
-    name="Disk Drill"
-    type="dmg"
-    appname="Disk Drill.app"
-    downloadURL="https://dl.cleverfiles.com/diskdrill.dmg"
-    expectedTeamID="A3W62KZY8Z"
-    blockingProcesses=( Disk Drill )
-    ;;
 diskspace)
     name="diskspace"
     type="pkg"
@@ -3323,11 +3314,7 @@ eclipsetemurin11)
 eclipsetemurin17)
     name="Temurin 17"
     type="pkg"
-    if [[ $(arch) == "arm64" ]]; then
-        archiveName="OpenJDK17U-jdk_aarch64_mac_hotspot_[0-9._]+\.pkg"
-    elif [[ $(arch) == "i386" ]]; then
-        archiveName="OpenJDK17U-jdk_x64_mac_hotspot_[0-9._]+\.pkg"
-    fi
+    packageID="net.temurin.17.jdk"
     downloadURL="$(downloadURLFromGit adoptium temurin17-binaries)"
     appNewVersion="$(downloadURLFromGit adoptium temurin17-binaries | grep -oE 'jdk-17(\.0\.)?([0-9]+)?(\.[0-9]+)?%2B[0-9]+(\.[0-9]+)?' | sed 's/jdk-//; s/%2B/+/g')"
     expectedTeamID="JCDTMS22B4"
@@ -3716,7 +3703,7 @@ firefoxpkg_intl)
     # and install corrosponding version of Firefox ESR
     name="Firefox"
     type="pkg"
-    userLanguage=$(runAsUser defaults read .GlobalPreferences AppleLocale | tr '_' '-' | cut -f1 -d"@")
+    userLanguage=$(runAsUser defaults read .GlobalPreferences AppleLocale | tr '_' '-')
     # userLanguage="sv-SE" #for tests without international language setup
     printlog "Found language $userLanguage to be used for Firefox." WARN
     releaseURL="https://ftp.mozilla.org/pub/firefox/releases/latest/README.txt"
@@ -4057,13 +4044,6 @@ googlesoftwareupdate)
     blockingProcesses=( NONE )
     expectedTeamID="EQHXZ8M8AV"
     ;;
-gosign)
-    name="GoSign-Desktop"
-    type="dmg"
-    downloadURL="https://rinnovofirma.infocert.it/gosign/download/darwin/latest/"
-    expectedTeamID="QC25859FX9"
-    appName="GoSign-Desktop.app"
-    ;;
 gotomeeting)
     # credit: @matins
     name="GoToMeeting"
@@ -4175,7 +4155,7 @@ homebrew)
     packageID="sh.brew.homebrew"
     downloadURL="$(downloadURLFromGit Homebrew brew)"
     appNewVersion="$(versionFromGit Homebrew brew)"
-    expectedTeamID="927JGANW46"
+    expectedTeamID="6248TWFRH6"
     archiveName="Homebrew.pkg"
     ;;
 hoppscotch)
@@ -5424,12 +5404,6 @@ mailmate)
     downloadURL="https://updates.mailmate-app.com/archives/MailMateBeta.tbz"
     appNewVersion="$(curl -fs https://updates.mailmate-app.com/beta_release_notes | grep Revision | head -n 1 | sed -E 's/.* ([0-9\.]*) .*/\1/g')"
     expectedTeamID="VP8UL4YCJC"
-    ;;
-mailtooutlook)
-    name="MailToOutlook"
-    type="pkg"
-    downloadURL=https://macadmins.software/tools/MailToOutlook_2.1.pkg
-    expectedTeamID="QGS93ZLCU7"
     ;;
 malwarebytes)
     name="Malwarebytes"
@@ -8024,6 +7998,14 @@ tailscale)
     expectedTeamID="W5364U7YZB"
     versionKey="CFBundleShortVersionString"
     ;;
+talkdeskcallbar)
+    name="Callbar"
+    type="dmg"
+    talkdeskcallbarVersions=$(curl -fsL "https://downloadcallbar.talkdesk.com/release_metadata.json")
+    appNewVersion=$(getJSONValue "$talkdeskcallbarVersions" "version")
+    downloadURL=https://downloadcallbar.talkdesk.com/Callbar-${appNewVersion}.dmg
+    expectedTeamID="YGGJX44TB8"
+    ;;
 talkdeskcxcloud)
     name="Talkdesk"
     type="dmg"
@@ -8188,7 +8170,7 @@ thunderbird_intl)
     # and install corrosponding version of Thunderbird
     name="Thunderbird"
     type="dmg"
-    userLanguage=$(if [ -e "/Applications/${name}.app/Contents/Resources/locale.ini" ]; then tail -1 "/Applications/${name}.app/Contents/Resources/locale.ini" | grep "locale=" | awk -F'=' '{ print $2 }'; else runAsUser defaults read .GlobalPreferences AppleLocale | tr '_' '-'; fi)
+    userLanguage=$(runAsUser defaults read .GlobalPreferences AppleLocale | tr '_' '-')
     printlog "Found language $userLanguage to be used for $name."
     releaseURL="https://ftp.mozilla.org/pub/thunderbird/releases/latest/README.txt"
     until curl -fs $releaseURL | grep -q "=$userLanguage"; do
@@ -8535,7 +8517,7 @@ vscodium)
     type="dmg"
     downloadURL="$(downloadURLFromGit VSCodium vscodium)"
     appNewVersion="$(versionFromGit VSCodium vscodium)"
-    expectedTeamID="VC39D2VNQ7"
+    expectedTeamID="C7S3ZQ2B8V"
     blockingProcesses=( Electron )
     ;;
 vysor)

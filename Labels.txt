@@ -182,7 +182,6 @@ dialog
 dialpad
 digiexam
 discord
-diskdrill
 diskspace
 displaylinkmanager
 displaylinkmanagergraphicsconnectivity
@@ -282,7 +281,6 @@ googledrivefilestream
 googleearth
 googlejapaneseinput
 googlesoftwareupdate
-gosign
 gotomeeting
 gpgsuite
 gpgsync
@@ -416,7 +414,6 @@ mactex
 mactracker
 magicbullet
 mailmate
-mailtooutlook
 malwarebytes
 marathon
 marathon2
@@ -720,6 +717,7 @@ tableaupublic
 tableaureader
 tageditor
 tailscale
+talkdeskcallbar
 talkdeskcxcloud
 taskpaper
 teamviewer
