@@ -215,16 +215,48 @@ xpath() {
 	fi
 }
 
-# from @Pico: https://macadmins.slack.com/archives/CGXNNJXJ9/p1652222365989229?thread_ts=1651786411.413349&cid=CGXNNJXJ9
+# getJSONValue() {
+# 	# $1: JSON string OR file path to parse (tested to work with up to 1GB string and 2GB file).
+# 	# $2: JSON key path to look up (using dot or bracket notation).
+# 	printf '%s' "$1" | /usr/bin/osascript -l 'JavaScript' \
+# 		-e "let json = $.NSString.alloc.initWithDataEncoding($.NSFileHandle.fileHandleWithStandardInput.readDataToEndOfFile$(/usr/bin/uname -r | /usr/bin/awk -F '.' '($1 > 18) { print "AndReturnError(ObjC.wrap())" }'), $.NSUTF8StringEncoding)" \
+# 		-e 'if ($.NSFileManager.defaultManager.fileExistsAtPath(json)) json = $.NSString.stringWithContentsOfFileEncodingError(json, $.NSUTF8StringEncoding, ObjC.wrap())' \
+# 		-e "const value = JSON.parse(json.js)$([ -n "${2%%[.[]*}" ] && echo '.')$2" \
+# 		-e 'if (typeof value === "object") { JSON.stringify(value, null, 4) } else { value }'
+# }
+
+
+
 getJSONValue() {
-	# $1: JSON string OR file path to parse (tested to work with up to 1GB string and 2GB file).
-	# $2: JSON key path to look up (using dot or bracket notation).
-	printf '%s' "$1" | /usr/bin/osascript -l 'JavaScript' \
-		-e "let json = $.NSString.alloc.initWithDataEncoding($.NSFileHandle.fileHandleWithStandardInput.readDataToEndOfFile$(/usr/bin/uname -r | /usr/bin/awk -F '.' '($1 > 18) { print "AndReturnError(ObjC.wrap())" }'), $.NSUTF8StringEncoding)" \
-		-e 'if ($.NSFileManager.defaultManager.fileExistsAtPath(json)) json = $.NSString.stringWithContentsOfFileEncodingError(json, $.NSUTF8StringEncoding, ObjC.wrap())' \
-		-e "const value = JSON.parse(json.js)$([ -n "${2%%[.[]*}" ] && echo '.')$2" \
-		-e 'if (typeof value === "object") { JSON.stringify(value, null, 4) } else { value }'
+    # $1: JSON string OR file path to parse
+    # $2: JSON key path to look up (using dot or bracket notation)
+
+    macos_major_version=$(/usr/bin/sw_vers -productVersion | /usr/bin/awk -F '.' '{print $1}')
+
+    if (( macos_major_version >= 15 )); then
+        # Add '.' prefix to jq key path if missing
+        keyPath="$2"
+        [[ "$keyPath" != .* ]] && keyPath=".$keyPath"
+
+        # Use jq for macOS 15.x or later
+        if [[ -f "$1" ]]; then
+            # If the input is a file, use jq to parse it
+            cat "$1" | tr -d '\000-\037' | sed 's/\\u[0-9A-Fa-f]\{0,3\}//g' | jq -r "$keyPath" || echo "Key not found or invalid JSON: $keyPath"
+        else
+            # If the input is a JSON string, echo it and pipe to jq
+            echo "$1" | tr -d '\000-\037' | sed 's/\\u[0-9A-Fa-f]\{0,3\}//g' | jq -r "$keyPath" || echo "Key not found or invalid JSON: $keyPath"
+        fi
+    else
+        # from @Pico: https://macadmins.slack.com/archives/CGXNNJXJ9/p1652222365989229?thread_ts=1651786411.413349&cid=CGXNNJXJ9
+        # Use osascript for older versions of macOS
+        printf '%s' "$1" | /usr/bin/osascript -l 'JavaScript' \
+            -e "let json = $.NSString.alloc.initWithDataEncoding($.NSFileHandle.fileHandleWithStandardInput.readDataToEndOfFile$(/usr/bin/uname -r | /usr/bin/awk -F '.' '($1 > 18) { print "AndReturnError(ObjC.wrap())" }'), $.NSUTF8StringEncoding)" \
+            -e 'if ($.NSFileManager.defaultManager.fileExistsAtPath(json)) json = $.NSString.stringWithContentsOfFileEncodingError(json, $.NSUTF8StringEncoding, ObjC.wrap())' \
+            -e "const value = JSON.parse(json.js)$([ -n "${2%%[.[]*}" ] && echo '.')$2" \
+            -e 'if (typeof value === "object") { JSON.stringify(value, null, 4) } else { value }'
+    fi
 }
+
 
 getAppVersion() {
     # modified by: Søren Theilgaard (@theilgaard) and Isaac Ordonez
