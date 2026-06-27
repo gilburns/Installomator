@@ -48,6 +48,7 @@ amazoncorretto17jdk
 amazoncorretto21jdk
 amazoncorretto22jdk
 amazoncorretto23jdk
+amazoncorretto25jdk
 amazoncorretto8jdk
 amazonq
 amazonworkspaces
@@ -232,7 +233,9 @@ coconutbattery
 code42
 codemeter
 coderunner
+codex
 colourcontrastanalyser
+conductor
 connectfonts
 container
 cormorant
@@ -269,6 +272,7 @@ deskpad
 desktoppr
 detectxswift
 determinate
+devin
 devonthink
 dialog
 dialpad
@@ -427,6 +431,7 @@ gotomeeting
 gotowebinar
 gpgsuite
 gpgsync
+gram
 grammarly
 grandperspective
 granola
@@ -560,6 +565,7 @@ latexit
 launchbar
 launchcontrol
 lcadvancedvpnclient
+lens
 lexarrecoverytool
 lgcalibrationstudio
 libericajdk11ltsfull
@@ -594,6 +600,7 @@ lulu
 lunadisplay
 macadminspython
 maccyapp
+mace
 macfuse
 macoslaps
 macpass
@@ -635,6 +642,7 @@ microsoftedgeconsumerstable
 microsoftedgeenterprisestable
 microsoftexcel
 microsoftexcelreset
+microsoftglobalsecureaccessclient
 microsoftlicenseremovaltool
 microsoftlicensereset
 microsoftoffice365
@@ -656,6 +664,7 @@ microsoftoutlookdataremoval
 microsoftoutlookreset
 microsoftpowerpoint
 microsoftpowerpointreset
+microsoftpowershell
 microsoftremotedesktop
 microsoftremotehelp
 microsoftsharepointplugin
@@ -843,6 +852,7 @@ python
 qgis-pr
 qlab
 r
+radiosilence
 raindropio
 rancherdesktop
 rapidapi
